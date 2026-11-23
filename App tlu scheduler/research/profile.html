@@ -1,0 +1,330 @@
+<!-- BEGIN PAGE HEADER-->
+<!--<div class="page-bar">-->
+    <!--<h3 class="page-title pull-left"><i class="icon-layers"></i> Hồ sơ sinh viên</h3>-->
+    <!--<ul class="page-breadcrumb pull-right hidden-xs">-->
+        <!--<li>-->
+            <!--<a href="#">Sinh viên</a>-->
+            <!--<i class="fa fa-circle"></i>-->
+        <!--</li>-->
+        <!--<li>-->
+            <!--<a href="#/student/profile">Hồ sơ</a>-->
+        <!--</li>-->
+    <!--</ul>-->
+<!--</div>-->
+<!-- END PAGE HEADER-->
+<!-- BEGIN MAIN CONTENT -->
+<div class="row">
+    <div class="margin-top-20 col-md-3">
+        <ui-select ng-model="vm.currentSemester" sortable="true" close-on-select="true" on-select="vm.onSemesterSelected($item)">
+            <ui-select-match allow-clear="true" placeholder="Chọn học kỳ...">{{$select.selected.semesterName}}</ui-select-match>
+            <ui-select-choices repeat="semester in vm.semesters | propsFilter: {semesterName: $select.search, semesterCode: $select.search}">
+                <div class="bold" ng-bind-html="semester.semesterName | highlight: $select.search"></div>
+                <small>
+                    &mdash; Mã học kỳ: {{semester.semesterCode}}
+                </small>
+            </ui-select-choices>
+        </ui-select>
+    </div>
+    <!--<div class="margin-top-20 col-md-3" ng-if="vm.isStudentLoggedIn == false">
+        <form ng-submit="vm.searchStudents()" class="no-margin no-padding">
+            <div class="input-group">
+                <input type="text" class="form-control" ng-model="vm.studentCode" placeholder="Tìm mã, tên sinh viên..." />
+                <div class="input-group-btn">
+                    <button type="button" ng-click="vm.searchStudents()" class="btn btn-default">Tìm kiếm</button>
+                </div>
+                <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
+            </div>
+        </form>
+    </div>-->
+</div>
+<!-- Students -->
+<div class="row" ng-if="vm.students.length > 0">
+    <div class="col-xs-12">
+        <div class="search-result-title"><i class="icon-equalizer"></i> Các sinh viên được tìm thấy</div>
+    </div>
+    <div class="col-xs-12">
+        <div ng-repeat="student in vm.students" class="display-inlineblock">
+            <span ng-if="student.studentCode == vm.currentStudent.studentCode" class="btn bg-gray-active margin-right-20 btn-custom-1 margin-top-10" ng-click=""><i class="icon-user-following"></i> {{student.displayName}} <smaller>({{student.studentCode}})</smaller></span>
+            <a ng-if="student.studentCode != vm.currentStudent.studentCode" class="btn btn-default margin-right-20 btn-custom-1 margin-top-10" ng-click="vm.selectStudent(student)"><i class="icon-user"></i> {{student.displayName}} <smaller>({{student.studentCode}})</smaller></a>
+        </div>
+    </div>
+</div>
+<div class="row margin-top-20">
+
+    <div class="col-md-12">
+        <div class="portlet light bordered">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="fa fa-th-large"></i>
+                    <span class="caption-subject">Thông tin đăng ký học</span>
+                </div>
+                <div class="actions">
+                    <a class="btn btn-circle btn-icon-only btn-default" ng-click="vm.refreshEnrolledCourseSubjects()" href="javascript:;">
+                        <i class="icon-refresh"></i>
+                    </a>
+                </div>
+                <div class="tools margin-right-20">
+                    <a href="" class="collapse" data-original-title="" title=""> </a>
+                </div>
+            </div>
+            <!--<div class="portlet-body">-->
+                <!--<div ng-if="vm.enrolledCourseSubjects.length <= 0" class="no-content1 display-block">-->
+                    <!--Bạn chưa đăng ký lớp học phần nào.-->
+                <!--</div>-->
+                <!--<div ng-if="vm.enrolledCourseSubjects.length > 0" class="row text-bold text-muted border-bottom margin-lr-10">-->
+                    <!--<div class="col-md-3">-->
+                        <!--Lớp học phần-->
+                    <!--</div>-->
+                    <!--<div class="col-md-5">-->
+                        <!--Thời gian-->
+                    <!--</div>-->
+                    <!--<div class="col-md-2">-->
+                        <!--Phòng học-->
+                    <!--</div>-->
+                    <!--<div class="col-md-2">-->
+                        <!--Giảng viên-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div ng-repeat="enrolledCS in vm.enrolledCourseSubjects" class="row text-larger" ng-class="{'margin-top-20': $index > 0}" style="padding-left: 25px;">-->
+                    <!--<div class="col-md-3">-->
+                        <!--<b>{{enrolledCS.courseSubject.semesterSubject.subject.subjectName}}</b>-->
+						<!--<br/>-->
+						<!--({{enrolledCS.courseSubject.code}})-->
+                    <!--</div>-->
+                    <!--<div class="col-md-9">-->
+                        <!--<div class="row text-larger" ng-repeat="ttb2 in enrolledCS.courseSubject.timetables" ng-class="{'margin-top-20': $index > 0}">-->
+                            <!--<div class="col-xs-6 whitespace-nowrap">-->
+                                <!--<i class="icon-calendar"></i>-->
+                                <!--Tuần: {{ttb2.fromWeek}} &mdash; {{ttb2.toWeek}}-->
+                                <!--<span class="margin-left-5 margin-right-5">&#8631;</span> {{ttb2.weekIndex | weekDay}}: {{ttb2.startHour.name}} &mdash; {{ttb2.endHour.name}}-->
+                            <!--</div>-->
+                            <!--<div class="col-xs-3" style="padding-left: 55px;">{{ttb2.room.name}}</div>-->
+                            <!--<div class="col-xs-3" style="padding-left: 15px;">{{ttb2.teacher.displayName}}</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="row text-bold text-muted border-bottom margin-lr-10"></div>-->
+                <!--<div class="row form-group" ng-if="vm.enrolledCourseSubjects.length > 0">-->
+                    <!--<div class="col-md-6">-->
+                    	<!--Tổng số tín chỉ:-->
+
+                        <!--<b>{{vm.numberOfCredit | number:0}}</b>-->
+                        <!--&lt;!&ndash; <input readonly data-ng-model="vm.numberOfCredit" class="form-control"> &ndash;&gt;-->
+                    <!--</div>-->
+                    <!--<div class="col-md-6">-->
+                    	<!--Tổng số học phí:-->
+
+                        <!--<b>{{vm.tuitionFeePerCreditTotal | number:0}}</b>-->
+                        <!--&lt;!&ndash; <input readonly data-ng-model="vm.tuitionFeePerCreditTotal" class="form-control"> &ndash;&gt;-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+            <div class="portlet-body">
+                <div ng-if="vm.enrolledCourseSubjects.length <= 0" class="no-content1 display-block">
+                    Bạn chưa đăng ký lớp học phần nào.
+                </div>
+                <uib-tabset ng-if="vm.enrolledCourseSubjects.length > 0"  active="activeForm">
+                    <uib-tab index="0" heading="Thông tin chi tiết" class="bold">
+                        <div ng-if="vm.enrolledCourseSubjects.length > 0" class="row text-bold text-muted border-bottom margin-lr-10">
+                            <div class="col-md-2">Lớp học phần</div>
+                            <div class="col-md-3">Thời gian</div>
+                            <div class="col-md-2" style="padding-left: 40px;">Phòng học</div>
+                            <div class="col-md-2">Giảng viên</div>
+                            <div class="col-md-1">Khóa</div>
+                            <div class="col-md-1">Trạng thái</div>
+                            <div class="col-md-1">Số tín chỉ</div>
+
+                        </div>
+                        <div ng-repeat="enrolledCS in vm.enrolledCourseSubjects" 
+                        class="row text-larger" style="padding-left: 25px;"
+						ng-class="{'margin-top-30': $index &gt; 0}"
+                        >
+                            <div class="col-md-2">{{enrolledCS.subjectCode}} <span ng-if="enrolledCS.subjectStatus!=null &&enrolledCS.subjectStatus==-4" class="text-red bold"> -> Đã hủy </span></div>
+                            <div class="col-md-10">
+                                <div class="row text-larger" 
+                                ng-class="{'margin-top-25': $index > 0}" 
+                                ng-repeat="ttb2 in enrolledCS.courseSubject.timetables| orderBy : ['fromWeek','weekIndex','start'] |groupBy:['fromWeek','toWeek']">
+                                    <div class="col-md-4 whitespace-nowrap">
+										<span ng-if="ttb2.startDate!=null && ttb2.endDate!=null" class="" ng-show="ttb2.group_by_key">
+                                            <i class="icon-calendar"></i>
+                                            Tuần: {{ttb2.fromWeek}} &mdash; {{ttb2.toWeek}}</br>
+           									(<b>{{ttb2.startDate | date:'dd/MM/yyyy':'UTC+7'}}</b>
+           									<i class="fa fa-fw fa-long-arrow-right"></i>
+           									<b>{{ttb2.endDate | date:'dd/MM/yyyy':'UTC+7'}}</b>)
+         								</span></br>
+                                        <span class="margin-left-5 margin-right-5" ng-if="ttb2.weekIndex!=0">&#8631; {{ttb2.weekIndex | weekDay}}: {{ttb2.startHour.name}} &mdash; {{ttb2.endHour.name}}</span>
+                                    </div>
+                                    <div class="col-md-2" style=" margin-top:40px ;" ng-class="{'margin-top-20': $index &gt; 0}">{{ttb2.room.name}}</div>
+                                    <div class="col-md-2" style="padding-left: 15px; margin-top:40px ;" ng-show="ttb2.group_by_key">{{ttb2.teacher.displayName}}</div>
+                                    <div class="col-md-1" style="padding-left: 45px; margin-top:40px ;text-align: center;" >
+                                        <span  ng-if="enrolledCS.courseSubject.courseYearCode!= null" ng-show="ttb2.group_by_key">{{enrolledCS.courseSubject.courseYearCode}}</span>
+                                    </div>
+                                    <div class="col-md-2" style="padding-left: 25px; margin-top:40px ; text-align: center;" >
+                                        <span  ng-if="enrolledCS.courseSubject.status!= null" ng-show="ttb2.group_by_key"><span ng-repeat="courseSubjectStatus in vm.courseSubjectStatus" ng-if="courseSubjectStatus.value == enrolledCS.courseSubject.status" ng-class="{'text-white':enrolledCS.courseSubject.status==0,'text-green':enrolledCS.courseSubject.status==1,'text-blue':enrolledCS.courseSubject.status==2,'text-red':enrolledCS.courseSubject.status==-1}">{{courseSubjectStatus.name}}</span></span>
+                                    </div>
+                                    <div class="col-md-1" style="padding-left: 15px; margin-top:40px ;" >
+                                        <span ng-if="enrolledCS.courseSubject.numberOfCredit!= null" ng-show="ttb2.group_by_key">{{enrolledCS.courseSubject.numberOfCredit}} TC </span> 
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row text-bold text-muted border-bottom margin-lr-10"></div>
+                        <div class="row form-group" ng-if="vm.enrolledCourseSubjects.length > 0">
+                            <div class="col-md-6">
+                                Tổng số tín chỉ:
+
+                                <b>{{vm.numberOfCredit | number:0}}</b>
+                                <!-- <input readonly data-ng-model="vm.numberOfCredit" class="form-control"> -->
+                            </div>
+                            <div class="col-md-6">
+                                <!-- Tổng số học phí:
+
+                                <b>{{vm.tuitionFeePerCreditTotal | number:0}}</b> -->
+                                <!-- <input readonly data-ng-model="vm.tuitionFeePerCreditTotal" class="form-control"> -->
+                            </div>
+                        </div>
+                    </uib-tab>
+                    <uib-tab index="1" heading="Bảng" class="bold">
+                        <div class="row" style="margin-left: 10px; margin-bottom: 10px;">
+                            <div class="col-md-6">
+                                <label class="bold">Tuần</label>
+                                <ui-select ng-model="vm.week" on-select="vm.onWeekChange()" sortable="true" close-on-select="true" style="width: 100% !important;">
+                                    <ui-select-match placeholder="Xin mời chọn...">{{$select.selected.name}} ({{$select.selected.startDateFormat}} - {{$select.selected.endDateFormat}})</ui-select-match>
+                                    <ui-select-choices repeat="week in vm.weeks | propsFilter: {name: $select.search}">
+                                        <div class="bold" ng-bind-html="week.name | highlight: $select.search"></div>
+                                        <small>({{week.startDateFormat}} - {{week.endDateFormat}})</small>
+                                    </ui-select-choices>
+                                </ui-select>
+                            </div>
+                        </div>
+                        <table style="height: 800px;width: 100%;" class="table table-striped table-bordered">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th>Thứ hai</th>
+                                <th>Thứ ba</th>
+                                <th>Thứ tư</th>
+                                <th>Thứ năm</th>
+                                <th>Thứ sáu</th>
+                                <th>Thứ bảy</th>
+                                <th>Chủ nhật</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <!--<tr ng-repeat="c in vm.courseHours">-->
+                            <!--<td>{{c.name}}</td>-->
+                            <!--<td ng-repeat="s in vm.schedules" ng-if="c.indexNumber == s.startHour.indexNumber">{{s.courseSubjectId}}</td>-->
+                            <!--</tr>-->
+                            <tr ng-repeat="c in vm.courseHours">
+                                <td>
+                                	{{c.name}}
+                                	<br/>
+                                	<span class="help-block">({{c.startString}}<i class="fa fa-fw fa-arrow-right"></i>{{c.endString}})</span>
+                                </td>
+                                <td style="height: 70px; width: 12.5%;">
+                                    <div style="height: 70px; width: 100%;overflow: hidden;text-overflow: ellipsis">
+                                        <a  popover-placement="{{vm.popover.placement}}"
+                                            uib-popover-html="getPopoverContent(vm.tables[2][$index].courseSubject.displayName,
+                                                                            vm.tables[2][$index].courseSubject.semesterSubject.subject.subjectName,
+                                                                            vm.tables[2][$index].teacher.displayName,
+                                                                            vm.tables[2][$index].roomName)"
+                                            popover-trigger="mouseenter">
+                                            <strong class="font-blue">{{vm.tables[2][$index].courseSubject.semesterSubject.subject.subjectName}}</strong><br>
+                                            <strong class="font-red">{{vm.tables[2][$index].roomName}}</strong>
+                                        </a>
+                                    </div>
+                                </td>
+                                <td style="height: 70px; width: 12.5%;">
+                                    <div style="height: 70px; width: 100%;overflow: hidden;text-overflow: ellipsis">
+                                        <a popover-placement="{{vm.popover.placement}}"
+                                           uib-popover-html="getPopoverContent(vm.tables[3][$index].courseSubject.displayName,
+                                                                            vm.tables[3][$index].courseSubject.semesterSubject.subject.subjectName,
+                                                                            vm.tables[3][$index].teacher.displayName,
+                                                                            vm.tables[3][$index].roomName)"
+                                           popover-trigger="mouseenter">
+                                            <strong class="font-blue">{{vm.tables[3][$index].courseSubject.semesterSubject.subject.subjectName}}</strong><br>
+                                            <strong class="font-red">{{vm.tables[3][$index].roomName}}</strong>
+                                        </a>
+                                    </div>
+                                </td>
+                                <td style="height: 70px; width: 12.5%;">
+                                    <div style="height: 70px; width: 100%;overflow: hidden;text-overflow: ellipsis">
+                                        <a popover-placement="{{vm.popover.placement}}"
+                                           uib-popover-html="getPopoverContent(vm.tables[4][$index].courseSubject.displayName,
+                                                                            vm.tables[4][$index].courseSubject.semesterSubject.subject.subjectName,
+                                                                            vm.tables[4][$index].teacher.displayName,
+                                                                            vm.tables[4][$index].roomName)"
+                                           popover-trigger="mouseenter">
+                                            <strong class="font-blue">{{vm.tables[4][$index].courseSubject.semesterSubject.subject.subjectName}}</strong><br>
+                                            <strong class="font-red">{{vm.tables[4][$index].roomName}}</strong>
+                                        </a>
+                                    </div>
+                                </td>
+                                <td style="height: 70px; width: 12.5%;">
+                                    <div style="height: 70px; width: 100%;overflow: hidden;text-overflow: ellipsis">
+                                        <a popover-placement="{{vm.popover.placement}}"
+                                           uib-popover-html="getPopoverContent(vm.tables[5][$index].courseSubject.displayName,
+                                                                            vm.tables[5][$index].courseSubject.semesterSubject.subject.subjectName,
+                                                                            vm.tables[5][$index].teacher.displayName,
+                                                                            vm.tables[5][$index].roomName)"
+                                           popover-trigger="mouseenter">
+                                            <strong class="font-blue">{{vm.tables[5][$index].courseSubject.semesterSubject.subject.subjectName}}</strong><br>
+                                            <strong class="font-red">{{vm.tables[5][$index].roomName}}</strong>
+                                        </a>
+                                    </div>
+                                </td>
+                                <td style="height: 70px; width: 12.5%;">
+                                    <div style="height: 70px; width: 100%;overflow: hidden;text-overflow: ellipsis">
+                                        <a popover-placement="{{vm.popover.placement}}"
+                                           uib-popover-html="getPopoverContent(vm.tables[6][$index].courseSubject.displayName,
+                                                                            vm.tables[6][$index].courseSubject.semesterSubject.subject.subjectName,
+                                                                            vm.tables[6][$index].teacher.displayName,
+                                                                            vm.tables[6][$index].roomName)"
+                                           popover-trigger="mouseenter">
+                                            <strong class="font-blue">{{vm.tables[6][$index].courseSubject.semesterSubject.subject.subjectName}}</strong><br>
+                                            <strong class="font-red">{{vm.tables[6][$index].roomName}}</strong>
+                                        </a>
+                                    </div>
+                                </td>
+                                <td style="height: 70px; width: 12.5%;">
+                                    <div style="height: 70px; width: 100%;overflow: hidden;text-overflow: ellipsis";>
+                                        <a popover-placement="{{vm.popover.placement}}"
+                                           uib-popover-html="getPopoverContent(vm.tables[7][$index].courseSubject.displayName,
+                                                                                vm.tables[7][$index].courseSubject.semesterSubject.subject.subjectName,
+                                                                                vm.tables[7][$index].teacher.displayName,
+                                                                                vm.tables[7][$index].roomName)"
+                                           popover-trigger="mouseenter">
+                                            <strong class="font-blue">{{vm.tables[7][$index].courseSubject.semesterSubject.subject.subjectName}}</strong><br>
+                                            <strong class="font-red">{{vm.tables[7][$index].roomName}}</strong>
+                                        </a>
+                                    </div>
+                                </td>
+                                <td style="height: 70px; width: 12.5%;">
+                                    <div style="height: 70px; width: 100%;overflow: hidden;text-overflow: ellipsis">
+                                        <a popover-placement="{{vm.popover.placement}}"
+                                           uib-popover-html="getPopoverContent(vm.tables[8][$index].courseSubject.displayName,
+                                                                                vm.tables[8][$index].courseSubject.semesterSubject.subject.subjectName,
+                                                                                vm.tables[8][$index].teacher.displayName,
+                                                                                vm.tables[8][$index].roomName)"
+                                           popover-trigger="mouseenter">
+                                            <strong class="font-blue">{{vm.tables[8][$index].courseSubject.semesterSubject.subject.subjectName}}</strong><br>
+                                            <strong class="font-red">{{vm.tables[8][$index].roomName}}</strong>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </uib-tab>
+                </uib-tabset>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- END MAIN CONTENT -->
+<!-- BEGIN MAIN JS-->
+<script>
+    // call any jquery or angularjs code ehre
+</script>
+<!-- BEGIN MAIN JS -->
